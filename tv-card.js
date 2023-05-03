@@ -302,50 +302,56 @@ class TVCardServices extends LitElement {
             return html ``;
         }
 
-        const row_names = ["power_row", "channel_row", "apps_row", "source_row", "volume_row", "media_control_row", "navigation_row"];
-
         var content = [];
-        Object.keys(this._config).forEach((row_name) => {
-            if (row_names.includes(row_name)) {
-                let row_actions = this._config[row_name];
+        function addRow(row_name, row_actions) {
+            if (row_name === "volume_row") {
+                let volume_row = [];
+                if (this._config.volume_row == "buttons") {
+                    volume_row = [
+                        this.buildIconButton("volume_down"),
+                        this.buildIconButton("volume_mute"),
+                        this.buildIconButton("volume_up")
+                    ];
+                } else if (this._config.volume_row == "slider") {
+                    volume_row = [this.volume_slider];
+                }
+                content.push(volume_row);
+            } else if (row_name === "navigation_row") {
+                let navigation_row = [];
 
-                if (row_name === "volume_row") {
-                    let volume_row = [];
-                    if (this._config.volume_row == "buttons") {
-                        volume_row = [
-                            this.buildIconButton("volume_down"),
-                            this.buildIconButton("volume_mute"),
-                            this.buildIconButton("volume_up")
-                        ];
-                    } else if (this._config.volume_row == "slider") {
-                        volume_row = [this.volume_slider];
-                    }
-                    content.push(volume_row);
-                } else if (row_name === "navigation_row") {
-                    let navigation_row = [];
+                if (this._config.navigation_row == "buttons") {
+                    let up_row = [this.buildIconButton("up")];
+                    let middle_row = [this.buildIconButton("left"), this.buildIconButton("enter"), this.buildIconButton("right")];
+                    let down_row = [this.buildIconButton("down")];
+                    navigation_row = [up_row, middle_row, down_row];
+                } else if (this._config.navigation_row == "touchpad") {
+                    var touchpad = [html `
+                        <toucharea
+                            id="toucharea"
+                            @click="${this.onClick}"
+                            @dblclick="${this.onDoubleClick}"
+                            @touchstart="${this.onTouchStart}"
+                            @touchmove="${this.onTouchMove}"
+                            @touchend="${this.onTouchEnd}">
+                        </toucharea>
+                    `];
+                    navigation_row = [touchpad];
+                }
+                content.push(...navigation_row);
+            } else {
+                let row_content = this.buildButtonsFromActions(row_actions);
+                content.push(row_content);
+            }
+        }
 
-                    if (this._config.navigation_row == "buttons") {
-                        let up_row = [this.buildIconButton("up")];
-                        let middle_row = [this.buildIconButton("left"), this.buildIconButton("enter"), this.buildIconButton("right")];
-                        let down_row = [this.buildIconButton("down")];
-                        navigation_row = [up_row, middle_row, down_row];
-                    } else if (this._config.navigation_row == "touchpad") {
-                        var touchpad = [html `
-                            <toucharea
-                                id="toucharea"
-                                @click="${this.onClick}"
-                                @dblclick="${this.onDoubleClick}"
-                                @touchstart="${this.onTouchStart}"
-                                @touchmove="${this.onTouchMove}"
-                                @touchend="${this.onTouchEnd}">
-                            </toucharea>
-                        `];
-                        navigation_row = [touchpad];
-                    }
-                    content.push(...navigation_row);
-                } else {
-                    let row_content = this.buildButtonsFromActions(row_actions);
-                    content.push(row_content);
+        const row_names = ["power_row", "channel_row", "apps_row", "source_row", "volume_row", "media_control_row", "navigation_row"];
+        Object.keys(this._config).forEach((key) => {
+            let value = this._config[key];
+            if (row_names.includes(key)) {
+                addRow(key, value);
+            } else if (key == "rows") {
+                for (const x of value) {
+                    addRow(x.kind, x.keys);
                 }
             }
         });
