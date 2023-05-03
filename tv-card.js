@@ -303,7 +303,7 @@ class TVCardServices extends LitElement {
         }
 
         var content = [];
-        function addRow(row_name, row_actions) {
+        const addRow = (row_name, row_actions) => {
             if (row_name === "volume_row") {
                 let volume_row = [];
                 if (this._config.volume_row == "buttons") {
