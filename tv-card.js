@@ -306,25 +306,25 @@ class TVCardServices extends LitElement {
         const addRow = (row_name, row_actions) => {
             if (row_name === "volume_row") {
                 let volume_row = [];
-                if (this._config.volume_row == "buttons") {
+                if (row_actions == "buttons") {
                     volume_row = [
                         this.buildIconButton("volume_down"),
                         this.buildIconButton("volume_mute"),
                         this.buildIconButton("volume_up")
                     ];
-                } else if (this._config.volume_row == "slider") {
+                } else if (row_actions == "slider") {
                     volume_row = [this.volume_slider];
                 }
                 content.push(volume_row);
             } else if (row_name === "navigation_row") {
                 let navigation_row = [];
 
-                if (this._config.navigation_row == "buttons") {
+                if (row_actions == "buttons") {
                     let up_row = [this.buildIconButton("up")];
                     let middle_row = [this.buildIconButton("left"), this.buildIconButton("enter"), this.buildIconButton("right")];
                     let down_row = [this.buildIconButton("down")];
                     navigation_row = [up_row, middle_row, down_row];
-                } else if (this._config.navigation_row == "touchpad") {
+                } else if (row_actions == "touchpad") {
                     var touchpad = [html `
                         <toucharea
                             id="toucharea"
